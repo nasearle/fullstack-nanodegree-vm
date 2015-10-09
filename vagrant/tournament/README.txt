@@ -41,10 +41,10 @@ Instructions:
 	swissPairings() to match players. Enter the results after each game
 	using reportMatch(winner, loser) to update the standings. The 
 	players' standings can be seen using the playerStandings() 
-	function. After the	first round of matches is complete, you can 
+	function. After the first round of matches is complete, you can 
 	use swissPairings() again to set up the second round, and so on.
 	
-	There is also a countPlayers() function which, surprisingly, 
-	returns the number of players. Finally, there are deletePlayers()
-	and	deleteMatches() functions, which allow you to remove all data
-	to start a new tournament!
+	There is also a countPlayers() function which returns the number 
+	of players. Finally, there are deletePlayers() and deleteMatches()
+	functions, which allow you to remove all data to start a new
+	tournament!
