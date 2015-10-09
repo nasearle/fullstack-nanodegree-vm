@@ -13,14 +13,33 @@ def connect():
 
 def deleteMatches():
     """Remove all the match records from the database."""
+    conn = connect()
+    c = conn.cursor()
+    c.execute("delete from matches;")
+    conn.commit()
+    conn.close()
 
 
 def deletePlayers():
     """Remove all the player records from the database."""
+    conn = connect()
+    c = conn.cursor()
+    c.execute("delete from players;")
+    conn.commit()
+    conn.close()
 
 
 def countPlayers():
     """Returns the number of players currently registered."""
+    conn = connect()
+    c = conn.cursor()
+    c.execute("select count(*) from players;")
+    result = c.fetchone()
+    number_of_rows = result[0]
+    if number_of_rows is None:
+        number_of_rows = 0
+    conn.close()
+    return number_of_rows
 
 
 def registerPlayer(name):
@@ -32,6 +51,13 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
+    if "'" in name:
+        name = name.replace("'", "''")
+    conn = connect()
+    c = conn.cursor()
+    c.execute("insert into players (name) values ('%s');" % (name,))
+    conn.commit()
+    conn.close()
 
 
 def playerStandings():
@@ -46,7 +72,26 @@ def playerStandings():
         name: the player's full name (as registered)
         wins: the number of matches the player has won
         matches: the number of matches the player has played
+
+    This query uses subqueries to count the wins and losses from the matches
+    table, and left joins the results to the players table. The overall
+    select statement then selects the id, name, wins, and adds the wins to
+    the losses to get the matches played. Finally, this query is ordered by
+    wins. fetchall() is the list of tuples that we want so the function
+    returns it.
     """
+    conn = connect()
+    c = conn.cursor()
+    c.execute("select id, name, coalesce(wins, 0) as wins, coalesce(losses, 0)"
+              " + coalesce(wins, 0) as matches from players left join"
+              " (select winner, count(*) as wins from matches group by winner)"
+              " as allwins on players.id = allwins.winner left join"
+              " (select loser, count(*) as losses from matches group by loser)"
+              " as alllosses on players.id = alllosses.loser"
+              " order by wins desc;")
+    standings = c.fetchall()
+    conn.close()
+    return standings
 
 
 def reportMatch(winner, loser):
@@ -56,6 +101,11 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
+    conn = connect()
+    c = conn.cursor()
+    c.execute("insert into matches values (%d, %d);" % (winner, loser,))
+    conn.commit()
+    conn.close()
  
  
 def swissPairings():
@@ -72,6 +122,16 @@ def swissPairings():
         name1: the first player's name
         id2: the second player's unique id
         name2: the second player's name
+
+    This function calls the playerStandings function, which returns a tuple,
+    and assigns it to the variable 'standings'. It then loops over 'standings',
+    taking the id and name from adjacent entries.
     """
-
-
+    pairings = []
+    standings = playerStandings()
+    i = 1
+    while i < len(standings):
+        pairings.append((standings[i-1][0], standings[i-1][1],
+                         standings[i][0], standings[i][1]))
+        i += 2
+    return pairings
