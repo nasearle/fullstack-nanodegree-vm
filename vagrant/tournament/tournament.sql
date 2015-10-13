@@ -15,6 +15,7 @@ DROP DATABASE IF EXISTS tournament;
 CREATE DATABASE tournament;
 \c tournament;
 
+DROP VIEW IF EXISTS standings;
 DROP TABLE IF EXISTS matches;
 DROP TABLE IF EXISTS players;
 
@@ -27,3 +28,12 @@ CREATE TABLE matches (
 	winner	integer references players(id),
 	loser	integer references players(id)
 );
+
+CREATE VIEW standings AS 
+	select id, name, coalesce(wins, 0) as wins, coalesce(losses, 0)
+			+ coalesce(wins, 0) as matches 
+	from players left join (select winner, count(*) as wins from matches
+		group by winner) as allwins on players.id = allwins.winner left join
+        (select loser, count(*) as losses from matches group by loser)
+        as alllosses on players.id = alllosses.loser
+    order by wins desc;

@@ -36,8 +36,6 @@ def countPlayers():
     c.execute("select count(*) from players;")
     result = c.fetchone()
     number_of_rows = result[0]
-    if number_of_rows is None:
-        number_of_rows = 0
     conn.close()
     return number_of_rows
 
@@ -51,11 +49,9 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
-    if "'" in name:
-        name = name.replace("'", "''")
     conn = connect()
     c = conn.cursor()
-    c.execute("insert into players (name) values ('%s');" % (name,))
+    c.execute("insert into players (name) values (%s);", (name,))
     conn.commit()
     conn.close()
 
@@ -82,13 +78,7 @@ def playerStandings():
     """
     conn = connect()
     c = conn.cursor()
-    c.execute("select id, name, coalesce(wins, 0) as wins, coalesce(losses, 0)"
-              " + coalesce(wins, 0) as matches from players left join"
-              " (select winner, count(*) as wins from matches group by winner)"
-              " as allwins on players.id = allwins.winner left join"
-              " (select loser, count(*) as losses from matches group by loser)"
-              " as alllosses on players.id = alllosses.loser"
-              " order by wins desc;")
+    c.execute("select * from standings;")
     standings = c.fetchall()
     conn.close()
     return standings
@@ -103,7 +93,7 @@ def reportMatch(winner, loser):
     """
     conn = connect()
     c = conn.cursor()
-    c.execute("insert into matches values (%d, %d);" % (winner, loser,))
+    c.execute("insert into matches values (%s, %s);", (winner, loser,))
     conn.commit()
     conn.close()
  
