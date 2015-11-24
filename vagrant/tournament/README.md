@@ -1,6 +1,5 @@
 ## Tournament Results
-This is a system for matching players and recording the results of
-a Swiss Tournament in a database.
+This is a system for matching players in a Swiss Tournament and recording the results in a database.
 	
 ### Included files:
 * fullstack-nanodegree-vm
