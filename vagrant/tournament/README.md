@@ -1,24 +1,19 @@
-Project Name: Tournament Results
+# Project Name: Tournament Results
 	This is a system for matching players and recording the results of
 	a Swiss Tournament in a database.
 	
-Included files:
-	fullstack-nanodegree-vm
-		README.txt
-		vagrant
-			* pg_config.sh and Vagrantfile - files necessary for
-			Vagrant to work
+# Included files:
+	* fullstack-nanodegree-vm
+		* README.txt
+		* vagrant
+			* pg_config.sh and Vagrantfile - files necessary for Vagrant to work
 			* .vagrant - more necessary Vagrant stuff
-			* tournament - contains the relevant files of this
-			project				
-				* tournament.sql - sets up the database and tables
-				to store the results of the tournament
-				* tournament.py - contains the functions to enter
-				data into and retrieve data from the database
-				* tournament_test.py - contains a series of test 
-				functions to check if tournament.py is working
+			* tournament - contains the relevant files of this project				
+				* tournament.sql - sets up the database and tables to store the results of the tournament
+				* tournament.py - contains the functions to enter data into and retrieve data from the database
+				* tournament_test.py - contains a series of test functions to check if tournament.py is working
 	
-Instructions:
+# Instructions:
 	First, fork the Project 2 - Tournament Results repository so 
 	that you have a version within your GitHub account. Clone your 
 	version of the Project 2 - Tournament Results repository to your
