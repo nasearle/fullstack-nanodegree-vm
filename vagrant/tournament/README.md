@@ -13,7 +13,7 @@ This is a system for matching players in a Swiss Tournament and recording the re
 			* tournament_test.py - contains a series of test functions to check if tournament.py is working
 	
 ### Instructions:
-First, fork the Project 2 - Tournament Results repository so 
+Fork the Project 2 - Tournament Results repository so 
 that you have a version within your GitHub account. Clone your 
 version of the Project 2 - Tournament Results repository to your
 local machine.
