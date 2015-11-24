@@ -1,8 +1,8 @@
-## Project Name: Tournament Results
+## Tournament Results
 This is a system for matching players and recording the results of
 a Swiss Tournament in a database.
 	
-## Included files:
+### Included files:
 * fullstack-nanodegree-vm
 	* README.txt
 	* vagrant
@@ -13,7 +13,7 @@ a Swiss Tournament in a database.
 			* tournament.py - contains the functions to enter data into and retrieve data from the database
 			* tournament_test.py - contains a series of test functions to check if tournament.py is working
 	
-## Instructions:
+### Instructions:
 First, fork the Project 2 - Tournament Results repository so 
 that you have a version within your GitHub account. Clone your 
 version of the Project 2 - Tournament Results repository to your
