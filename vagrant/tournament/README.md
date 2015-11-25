@@ -13,9 +13,9 @@ This is a system for matching players in a Swiss Tournament and recording the re
 			* tournament_test.py - contains a series of test functions to check if tournament.py is working
 	
 ### Instructions:
-Fork the Project 2 - Tournament Results repository so 
+Fork the fullstack-nanodegree-vm repository so 
 that you have a version within your GitHub account. Clone your 
-version of the Project 2 - Tournament Results repository to your
+version of the fullstack-nanodegree-vm repository to your
 local machine.
 
 Navigate to the tournament folder in the repository, open a 
