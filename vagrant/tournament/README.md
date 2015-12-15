@@ -33,10 +33,11 @@ Enter $ python. You can now >>> import tournament and use the
 functions in tournament.py to set up a Swiss tournament! Use 
 registerPlayer(name) to enter players into the draw, and then
 swissPairings() to match players. Enter the results after each game
-using reportMatch(winner, loser) to update the standings. The 
-players' standings can be seen using the playerStandings() 
-function. After the first round of matches is complete, you can 
-use swissPairings() again to set up the second round, and so on.
+using reportMatch(winner, loser), where winner and loser are the
+players' id's, to update the standings. The players' standings
+can be seen using the playerStandings() function. After the first
+round of matches is complete, you can use swissPairings() again
+to set up the second round, and so on.
 
 There is also a countPlayers() function which returns the number 
 of players. Finally, there are deletePlayers() and deleteMatches()
