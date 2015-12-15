@@ -1,5 +1,5 @@
 ## Item Catalog
-This is a web application that allows users to create and customize	menu pages for multiple restaurants.
+This is a web application that enables users to create and customize	menu pages for multiple restaurants.
 
 ### Included files:
 * fullstack-nanodegree-vm
