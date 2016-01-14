@@ -46,6 +46,7 @@ def showLogin():
     return render_template('login.html', STATE=state)
 
 
+# Log in user through facebook
 @app.route('/fbconnect', methods=['POST'])
 def fbconnect():
     if request.args.get('state') != login_session['state']:
@@ -117,6 +118,7 @@ def fbconnect():
     return output
 
 
+# Log out user through facebook
 @app.route('/fbdisconnect')
 def fbdisconnect():
     facebook_id = login_session['facebook_id']
@@ -129,6 +131,7 @@ def fbdisconnect():
     return "You have been logged out"
 
 
+# Log in user through Goggle+
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     # Validate state token
@@ -230,6 +233,7 @@ def gconnect():
     # DISCONNECT - Revoke a current user's token and reset their login_session
 
 
+# Log out user through Google+
 @app.route('/gdisconnect')
 def gdisconnect():
     # Only disconnect a connected user.
@@ -251,6 +255,8 @@ def gdisconnect():
         return response
 
 
+# general disconnect function that routes to either gdisconnect or
+# fbdisconnect and takes care of extra attributes of login session
 @app.route('/disconnect')
 def disconnect():
     if 'provider' in login_session:
@@ -273,6 +279,8 @@ def disconnect():
         return redirect(url_for('allRestaurants'))
 
 
+# Home page of app. If the user is not logged in they are routed to
+# the public version of the site.
 @app.route('/')
 @app.route('/restaurants/')
 def allRestaurants():
@@ -286,6 +294,8 @@ def allRestaurants():
                                user_id=user_id, session=login_session)
 
 
+# The create-a-restaurant page. If the user is not logged in,
+# they are routed to the log in screen.
 @app.route('/restaurant/new/', methods=['GET', 'POST'])
 def newRestaurant():
     if 'username' not in login_session:
@@ -301,6 +311,7 @@ def newRestaurant():
         return render_template('newrestaurant.html')
 
 
+# The edit restaurant page. Again requires the user to be logged in.
 @app.route('/restaurant/<int:restaurant_id>/edit', methods=['GET', 'POST'])
 def editRestaurant(restaurant_id):
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
@@ -321,6 +332,7 @@ def editRestaurant(restaurant_id):
                                restaurant_id=restaurant_id)
 
 
+# The delete restaurant page. Again requires the user to be logged in.
 @app.route('/restaurant/<int:restaurant_id>/delete', methods=['GET', 'POST'])
 def deleteRestaurant(restaurant_id):
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
@@ -339,7 +351,8 @@ def deleteRestaurant(restaurant_id):
         return render_template('deleterestaurant.html', restaurant=restaurant,
                                restaurant_id=restaurant_id)
 
-
+# Menu page. If the user is not logged in or is not the creator
+# of the restaurant, they see the public version of the page.
 @app.route('/restaurant/<int:restaurant_id>/')
 def restaurantMenu(restaurant_id):
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
@@ -367,6 +380,8 @@ def restaurantMenu(restaurant_id):
                                    session=login_session)
 
 
+# The create menu item page. Login required. Allows for the upload
+# of images.
 @app.route('/restaurant/<int:restaurant_id>/new/', methods=['GET', 'POST'])
 def newMenuItem(restaurant_id):
     if 'username' not in login_session:
@@ -379,12 +394,15 @@ def newMenuItem(restaurant_id):
         if image_file and allowed_file(image_file.filename):
             filename = secure_filename(image_file.filename)
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            # saves the file if the file does not already
+            # exist in the upload folder
             if not os.path.isfile(file_path):
                 image_file.save(file_path)
         item = MenuItem(name=request.form['name'],
                         description=request.form['description'],
                         price=request.form['price'],
-                        course=request.form['course'], image=filename,
+                        course=request.form['course'], 
+                        image=filename,
                         restaurant_id=restaurant_id,
                         user_id=login_session['user_id'])
         session.add(item)
@@ -397,6 +415,8 @@ def newMenuItem(restaurant_id):
                                restaurant_id=restaurant_id)
 
 
+# Edit menu item page. Login required. User can add, 
+# remove, or change the image for the menu item.
 @app.route('/restaurant/<int:restaurant_id>/<int:menu_id>/edit/',
            methods=['GET', 'POST'])
 def editMenuItem(restaurant_id, menu_id):
@@ -422,11 +442,19 @@ def editMenuItem(restaurant_id, menu_id):
                 if count == 2:
                     break
         if image_file and allowed_file(image_file.filename):
+            # if the file is not used by other menu items (count<2) and 
+            # the name of the uploaded file is not the same as the name 
+            # of the item's current image and there is a current image,
+            # delete it.
             if count < 2 and not image_file == filename and os.path.isfile\
                         (os.path.join(app.config['UPLOAD_FOLDER'], filename)):
                 os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            # The filename is then changed to the name of the
+            # upload and appended to the path to the upload folder.
             filename = secure_filename(image_file.filename)
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            # if a file with the same name does not exist in the upload
+            # folder, save the uploaded file
             if not os.path.isfile(file_path):
                 image_file.save(file_path)
         # If the count is two or greater, the file will not be deleted.
@@ -452,6 +480,7 @@ def editMenuItem(restaurant_id, menu_id):
                                restaurant_id=restaurant_id, menu_id=menu_id)
 
 
+# Delete menu item page. Login required.
 @app.route('/restaurant/<int:restaurant_id>/<int:menu_id>/delete/',
            methods=['GET', 'POST'])
 def deleteMenuItem(restaurant_id, menu_id):
@@ -472,6 +501,7 @@ def deleteMenuItem(restaurant_id, menu_id):
                 count += 1
                 if count == 2:
                     break
+        # if no other menu item uses this file, delete it.
         if count < 2 and os.path.isfile(os.path.join
                                 (app.config['UPLOAD_FOLDER'], filename)):
             os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -498,6 +528,7 @@ def getUserInfo(user_id):
     return user
 
 
+# add new user to the User model. Takes username, email, and picture.
 def createUser(login_session):
     newUser = User(name=login_session['username'],
                    email=login_session['email'],
@@ -508,13 +539,13 @@ def createUser(login_session):
     return user.id
 
 
+# check if uploaded file type is in the allowed extension list
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
 #Making an API Endpoint (GET Request)
-
 @app.route('/restaurants/JSON')
 def restaurantsJSON():
     restaurants = session.query(Restaurant).all()
